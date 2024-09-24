@@ -112,7 +112,6 @@ trait HasSnapshot
                     $model->fillable = array_diff( $model->fillable, [$model->{$field}] );
                 }
             }
-            // dd($model->getAttributes(), $model->getFillable(), $model->getSourceFields());
             return true;
         });
 
@@ -158,8 +157,6 @@ trait HasSnapshot
         $this->_originalFillable = $this->getFillable();
 
         $this->mergeFillable($this->getSourceFields());
-
-        // dd($this->getFillable());
     }
 
     /**
@@ -211,10 +208,7 @@ trait HasSnapshot
 
         $this->snapshot()->update([
             'data' => $this->getSnapshotData()
-            // 'data' => array_except($snapshotData, $this->snapshotSourceExcepts ?? [])
-            // 'data' => array_filter($snapshotData,fn($key) => !in_array($key,  $this->snapshotSourceExcepts ?? []),ARRAY_FILTER_USE_KEY)
         ]);
-
     }
 
     /**
@@ -262,8 +256,6 @@ trait HasSnapshot
                 }
 
             }else{
-                // dd($relationshipName, $model->{$relationshipName}, $this->serializeRelation($model->{$relationshipName}));
-                // $serializedData = $this->serializeRelation($model->{$relationshipName});
                 $serializedData = $source->{$relationshipName};
             }
 
@@ -274,7 +266,6 @@ trait HasSnapshot
         }
 
         return array_filter($data,fn($key) => !in_array($key,  $this->getSnapshotSourceExcepts()),ARRAY_FILTER_USE_KEY);
-        // return $data;
     }
 
     /**
@@ -424,6 +415,11 @@ trait HasSnapshot
         );
     }
 
+    /**
+     * getSnapshotSourceRelationshipExcepts
+     *
+     * @return array
+     */
     protected function getSnapshotSourceRelationshipExcepts(): array
     {
         return array_values(
@@ -432,6 +428,11 @@ trait HasSnapshot
             )
         );
     }
+    /**
+     * getSnapshotSourceExcepts
+     *
+     * @return array
+     */
     protected function getSnapshotSourceExcepts(): array
     {
         return $this->snapshotSourceExcepts ?? [];
