@@ -85,9 +85,9 @@ trait HasSnapshot
      */
     public static function bootHasSnapshot()
     {
-        self::saving(function($model){
+        self::saving(function ($model) {
             foreach (array_keys($model->_snapshotSourceFields) as $field) {
-                if(!in_array($field, $model->getColumns()) && isset($model->{$field})){
+                if (!in_array($field, $model->getColumns()) && isset($model->{$field})) {
                     $model->_snapshotSourceFields[$field] = $model->{$field};
                     $model->offsetUnset($field);
                 }
@@ -96,20 +96,20 @@ trait HasSnapshot
 
         self::creating(function ($model) {
             foreach ($model->getSourceFields() as $field) {
-                if(isset($model->{$field})){
+                if (isset($model->{$field})) {
                     $model->_snapshotSourceFields[$field] = $model->{$field};
                     $model->offsetUnset($field);
-                    $model->fillable = array_diff( $model->fillable, [$model->{$field}] );
+                    $model->fillable = array_diff($model->fillable, [$model->{$field}]);
                 }
             }
             return true;
         });
         self::updating(function ($model) {
             foreach ($model->getSourceFields() as $field) {
-                if(isset($model->{$field})){
+                if (isset($model->{$field})) {
                     $model->_snapshotSourceFields[$field] = $model->{$field};
                     $model->offsetUnset($field);
-                    $model->fillable = array_diff( $model->fillable, [$model->{$field}] );
+                    $model->fillable = array_diff($model->fillable, [$model->{$field}]);
                 }
             }
             return true;
@@ -123,14 +123,14 @@ trait HasSnapshot
 
         static::retrieved(function ($model) {
 
-            if(($foreignKey = $model->getSourceForeignKey())){
+            if (($foreignKey = $model->getSourceForeignKey())) {
                 $snapshot = $model->getSnapshot();
                 $source = $model->source()->with($model->getSnapshotSourceRelationships())->first();
 
                 $fields = array_merge($source->toArray(), $snapshot->getAttributes());
 
                 foreach ($fields as $fieldName => $value) {
-                    if(!$model->{$fieldName}){
+                    if (!$model->{$fieldName}) {
                         $model->_snapshotSourceFields[$fieldName] = $value;
                         $model->setAttribute($fieldName, $value);
                     }
@@ -151,8 +151,9 @@ trait HasSnapshot
      */
     public function initializeHasSnapshot()
     {
-        if(!isset($this->snapshotSourceModel))
+        if (!isset($this->snapshotSourceModel)) {
             throw new \Exception(static::class . ' must have a $snapshotSourceModel public property.');
+        }
 
         $this->_originalFillable = $this->getFillable();
 
@@ -220,7 +221,7 @@ trait HasSnapshot
     public function getSnapshotData(): array
     {
         $source = $this->source;
-        $data = array_merge( $source->toArray(), $this->snapshot->data);
+        $data = array_merge($source->toArray(), $this->snapshot->data);
 
         foreach ($this->getSnapshotSourceFillable() as $field) {
             $data[$field] = $this->_snapshotSourceFields[$field] ?? $data[$field];
@@ -229,43 +230,47 @@ trait HasSnapshot
         foreach ($this->getSnapshotSourceRelationships() as $relationshipName) {
             $relatedClass = $source->{$relationshipName}()->getRelated();
 
-            if($this::class === get_class($relatedClass)) continue;
+            if ($this::class === get_class($relatedClass)) {
+                continue;
+            }
 
             $valueOnModel = $this->_snapshotSourceFields[$relationshipName] ?? null;
 
             $serializedData = null;
 
             // if relationshipName exists on payload, get this value but not real relationship
-            if($valueOnModel){
-                if ($valueOnModel instanceof \Illuminate\Database\Eloquent\Collection) $valueOnModel = $valueOnModel->toArray();
+            if ($valueOnModel) {
+                if ($valueOnModel instanceof \Illuminate\Database\Eloquent\Collection) {
+                    $valueOnModel = $valueOnModel->toArray();
+                }
 
                 $oldValue = isset($data[$relationshipName])
                     ? $data[$relationshipName]
                     : $source->{$relationshipName};
 
-                if(json_encode($valueOnModel) != json_encode($oldValue)){
-                    if(is_array($valueOnModel)){
-                        if(count($valueOnModel) > 0){
+                if (json_encode($valueOnModel) != json_encode($oldValue)) {
+                    if (is_array($valueOnModel)) {
+                        if (count($valueOnModel) > 0) {
                             $serializedData = $source->{$relationshipName}()->getRelated()->whereIn('id', $valueOnModel)->get();
                         }
-                    }else{
+                    } else {
                         $serializedData = $source->{$relationshipName}()->getRelated()->where('id', $valueOnModel)->first();
                     }
-                }else{
+                } else {
                     $serializedData = $oldValue;
                 }
 
-            }else{
+            } else {
                 $serializedData = $source->{$relationshipName};
             }
 
-            if($serializedData){
+            if ($serializedData) {
                 $data[$relationshipName] = $serializedData;
                 $serializedData = null;
             }
         }
 
-        return array_filter($data,fn($key) => !in_array($key,  $this->getSnapshotSourceExcepts()),ARRAY_FILTER_USE_KEY);
+        return array_filter($data, fn ($key) => !in_array($key, $this->getSnapshotSourceExcepts()), ARRAY_FILTER_USE_KEY);
     }
 
     /**
@@ -277,7 +282,9 @@ trait HasSnapshot
     {
         $snapshot = $this->snapshot;
 
-        if (!$snapshot) return null;
+        if (!$snapshot) {
+            return null;
+        }
 
         $sourceModelClass = $snapshot->source_type;
 
@@ -295,7 +302,7 @@ trait HasSnapshot
      */
     protected function castToEloquent(array $data, string $modelClass)
     {
-        $model = new $modelClass;
+        $model = new $modelClass();
         $model->setRawAttributes($data);
 
         foreach ($data as $key => $value) {
@@ -333,8 +340,9 @@ trait HasSnapshot
     {
         $class = $this->getSource();
 
-        if(!$class)
+        if (!$class) {
             return null;
+        }
 
         $sourceModelForeignKey = $this->getSourceForeignKey();
         $sourceModelOwnerId = $this->_snapshotSourceFields[$sourceModelForeignKey];
@@ -351,11 +359,9 @@ trait HasSnapshot
     {
         $this->_originalFillable ??= $this->getFillable();
 
-        // $class = $this->getSource();
-        // $instance = new $class;
         $fillable = array_values(array_diff(
-            // $this->getSnapshotSourceFillable(), $this->_originalFillable
-            $this->getSnapshotSourceFillable(), $this->getColumns()
+            $this->getSnapshotSourceFillable(),
+            $this->getColumns()
         ));
 
         foreach ($this->getSnapshotSourceRelationships() as $relationshipName) {
@@ -376,8 +382,9 @@ trait HasSnapshot
     {
         $class = $this->getSource();
 
-        if(!$class)
+        if (!$class) {
             return null;
+        }
 
         $instance = new $class();
 
@@ -405,7 +412,7 @@ trait HasSnapshot
     public function getSnapshotSourceFillable(): array
     {
         $class = $this->getSource();
-        $instance = new $class;
+        $instance = new $class();
 
         return array_values(
             array_diff(
