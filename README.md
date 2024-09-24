@@ -20,7 +20,7 @@ composer require oobook/snapshot
 #### Publish config
 Create the snapshot config file under config/ folder using **artisan**
 ```
-php artisan vendor:publish --provider="Oobook\Snapshot\SnapshotServiceProvider" --tag="config"
+php artisan vendor:publish --tag="snapshot-config"
 ```
 
 ## Usage
