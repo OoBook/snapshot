@@ -5,8 +5,9 @@ namespace Oobook\Snapshot\Traits;
 use Oobook\Database\Eloquent\Concerns\ManageEloquent;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
-use Illuminate\Support\Facades\DB;
 use Oobook\Snapshot\Models\Snapshot;
+use Illuminate\Support\Arr;
+
 
 /**
  * Trait for creating snapshot functionality for Eloquent models.
@@ -443,5 +444,43 @@ trait HasSnapshot
     protected function getSnapshotSourceExcepts(): array
     {
         return $this->snapshotSourceExcepts ?? [];
+    }
+
+    /**
+     * Handle dynamic method calls into the model.
+     *
+     * @param  string  $method
+     * @param  array  $parameters
+     * @return mixed
+     */
+    public function __call($method, $parameters)
+    {
+        if(!$this->hasColumn($method) && method_exists($this->getSource(), $method)){
+            $sourceClass = $this->getSource();
+
+            $relationClassesPattern = "|" . preg_quote(config('manage-eloquent.relations_namespace'), "|") . "|";
+
+            $methodReflector = new \ReflectionMethod($sourceClass, $method);
+
+            if($methodReflector->hasReturnType() && preg_match("{$relationClassesPattern}", $methodReflector->getReturnType() )){
+
+                $query = $this->source->{$method}();
+
+                $value = $this->{$method};
+                if(isset($value)){
+
+                    if (is_array($value) && !Arr::isAssoc($value)) { // multiple relationship
+                        $query = $query->whereIn('id', Arr::map($value, fn($v) => $v['id']));
+
+                    }else if(is_array($value) && Arr::isAssoc($value)) { // single relationship
+                        $query = $query->where('id', $value['id']);
+                    }
+                }
+
+                return $query;
+            }
+        }
+
+        return parent::__call($method, $parameters);
     }
 }
