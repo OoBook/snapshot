@@ -87,9 +87,27 @@ trait HasSnapshot
     public static function bootHasSnapshot()
     {
         self::saving(function ($model) {
+            $snapshot = $model->snapshot;
+            $snapshotSourceChanged = false;
+            if($snapshot && $snapshot->source_id != $model->{$model->getSourceForeignKey()}){
+                $snapshotSourceChanged = true;
+                $snapshot->update(
+                    [
+                        'source_id' => $model->{$model->getSourceForeignKey()},
+                        'data' => ['id' => $model->{$model->getSourceForeignKey()} ],
+                    ]
+                );
+            }
             foreach (array_keys($model->_snapshotSourceFields) as $field) {
                 if (!in_array($field, $model->getColumns()) && isset($model->{$field})) {
-                    $model->_snapshotSourceFields[$field] = $model->{$field};
+                    $shouldUpdateSnapshot = !$snapshotSourceChanged ||
+                        json_encode($model->_snapshotSourceFields[$field] ?? null) !== json_encode($model->{$field});
+
+                    if ($shouldUpdateSnapshot) {
+                        $model->_snapshotSourceFields[$field] = $model->{$field};
+                    } else {
+                        unset($model->_snapshotSourceFields[$field]);
+                    }
                     $model->offsetUnset($field);
                 }
             }
@@ -105,7 +123,18 @@ trait HasSnapshot
             }
             return true;
         });
-        self::updating(function ($model) {
+        self::updating(function ($model, $oldModel) {
+            // $columns = $model->getColumns();
+            // $keys = array_keys($model->getAttributes());
+            // dd($model, $oldModel);
+            // dd(
+            //     $model->getAttributes(),
+            //     $model->getSourceFields(),
+            //     $model->getColumns()
+            // );
+            // foreach ($keys as $key => $) {
+            //     # code...
+            // }
             foreach ($model->getSourceFields() as $field) {
                 if (isset($model->{$field})) {
                     $model->_snapshotSourceFields[$field] = $model->{$field};
@@ -197,14 +226,15 @@ trait HasSnapshot
     {
         $source = $this->getSourceRecord();
 
-        $this->snapshot()->updateOrCreate(
+        $res = $this->snapshot()->updateOrCreate(
             [
                 'snapshotable_id' => $this->id,
                 'snapshotable_type' => get_class($this),
-            ],
-            [
                 'source_type' => get_class($source),
                 'source_id' => $source->id,
+            ],
+            [
+
             ]
         );
 
@@ -222,7 +252,8 @@ trait HasSnapshot
     public function getSnapshotData(): array
     {
         $source = $this->source;
-        $data = array_merge($source->toArray(), $this->snapshot->data);
+
+        $data = array_merge($source->toArray(), $this->snapshot?->data ?? []);
 
         foreach ($this->getSnapshotSourceFillable() as $field) {
             $data[$field] = $this->_snapshotSourceFields[$field] ?? $data[$field];
