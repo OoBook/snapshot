@@ -123,18 +123,7 @@ trait HasSnapshot
             }
             return true;
         });
-        self::updating(function ($model, $oldModel) {
-            // $columns = $model->getColumns();
-            // $keys = array_keys($model->getAttributes());
-            // dd($model, $oldModel);
-            // dd(
-            //     $model->getAttributes(),
-            //     $model->getSourceFields(),
-            //     $model->getColumns()
-            // );
-            // foreach ($keys as $key => $) {
-            //     # code...
-            // }
+        self::updating(function ($model) {
             foreach ($model->getSourceFields() as $field) {
                 if (isset($model->{$field})) {
                     $model->_snapshotSourceFields[$field] = $model->{$field};
