@@ -2,6 +2,22 @@
 
 All notable changes to `snapshot` will be documented in this file
 
+## v1.0.2 - 2024-10-03
+
+### :wrench: Bug Fixes
+
+- change snapshot data when source reference changed by @OoBook in https://github.com/OoBook/snapshot/commit/a5fd958fce9c7badc1f16bcb605bbee885e9aaee
+- remove ArgumentCountError from updating observer by @OoBook in https://github.com/OoBook/snapshot/commit/98c31e3131e5d2e5e8862161a824e82fb7fa730d
+
+### :green_heart: Workflow
+
+- remove 8.0 and laravel 9 support by @OoBook in https://github.com/OoBook/snapshot/commit/2c3453b2c8927551ec2d6da0e7abe8955986f1a1
+
+### :beers: Other Stuff
+
+- Update CHANGELOG file
+- update php version as >=8.1 by @OoBook in https://github.com/OoBook/snapshot/commit/d14d5b02f9fa5a7225ee2823e01ecaab7bcc7a5b
+
 ## v1.0.1 - 2024-09-30
 
 ### :rocket: Features
