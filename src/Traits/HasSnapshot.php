@@ -399,7 +399,7 @@ trait HasSnapshot
      *
      * @return string|null
      */
-    protected function getSourceForeignKey()
+    public function getSourceForeignKey()
     {
         $class = $this->getSource();
 
