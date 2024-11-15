@@ -2,6 +2,12 @@
 
 All notable changes to `snapshot` will be documented in this file
 
+## v1.0.3 - 2024-11-15
+
+### :wrench: Bug Fixes
+
+- change getSourceForeignKey's access modifiers to public by @OoBook in https://github.com/OoBook/snapshot/commit/2f4b25fc7a942d4ed1063d6bd01792777300cb08
+
 ## v1.0.2 - 2024-10-03
 
 ### :wrench: Bug Fixes
