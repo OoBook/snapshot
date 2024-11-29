@@ -2,6 +2,12 @@
 
 All notable changes to `snapshot` will be documented in this file
 
+## v1.0.4 - 2024-11-29
+
+### :wrench: Bug Fixes
+
+- :bug: change method existance scenario according to public methods by @OoBook in https://github.com/OoBook/snapshot/commit/4461bd5fd03f20fd59ecb7fd464a184fe8b95b6c
+
 ## v1.0.3 - 2024-11-15
 
 ### :wrench: Bug Fixes
