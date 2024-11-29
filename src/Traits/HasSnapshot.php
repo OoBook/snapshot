@@ -327,14 +327,20 @@ trait HasSnapshot
         $model->setRawAttributes($data);
 
         foreach ($data as $key => $value) {
-            if (method_exists($model, $key) && $model->$key() instanceof Relation) {
-                $relatedModelClass = get_class($model->$key()->getRelated());
-                if (is_array($value) && !isset($value[0])) {
-                    $model->setRelation($key, $this->castToEloquent($value, $relatedModelClass));
-                } elseif (is_array($value)) {
-                    $model->setRelation($key, collect($value)->map(function ($item) use ($relatedModelClass) {
-                        return $this->castToEloquent($item, $relatedModelClass);
-                    }));
+            if(method_exists($model, $key)){
+                $reflectionMethod = new \ReflectionMethod($model, $key);
+                if ($reflectionMethod->isPublic() && $reflectionMethod->isStatic() === false) {
+                    $relationInstance = $model->$key();
+                    if ($relationInstance instanceof Relation) {
+                        $relatedModelClass = get_class($relationInstance->getRelated());
+                        if (is_array($value) && !isset($value[0])) {
+                            $model->setRelation($key, $this->castToEloquent($value, $relatedModelClass));
+                        } elseif (is_array($value)) {
+                            $model->setRelation($key, collect($value)->map(function ($item) use ($relatedModelClass) {
+                                return $this->castToEloquent($item, $relatedModelClass);
+                            }));
+                        }
+                    }
                 }
             }
         }
