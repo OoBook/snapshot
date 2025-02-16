@@ -146,17 +146,19 @@ trait HasSnapshot
                 $snapshot = $model->getSnapshot();
                 $source = $model->source()->with($model->getSnapshotSourceRelationships())->first();
 
-                $fields = array_merge($source->toArray(), $snapshot->getAttributes());
+                if($source && $snapshot){
+                    $fields = array_merge($source->toArray(), $snapshot->getAttributes());
 
-                foreach ($fields as $fieldName => $value) {
-                    if (!$model->{$fieldName}) {
-                        $model->_snapshotSourceFields[$fieldName] = $value;
-                        $model->setAttribute($fieldName, $value);
+                    foreach ($fields as $fieldName => $value) {
+                        if (!$model->{$fieldName}) {
+                            $model->_snapshotSourceFields[$fieldName] = $value;
+                            $model->setAttribute($fieldName, $value);
+                        }
                     }
-                }
 
-                $model[$foreignKey] = $model->snapshot->source_id;
-                $model->_snapshotSourceFields[$foreignKey] = $model[$foreignKey];
+                    $model[$foreignKey] = $model->snapshot->source_id;
+                    $model->_snapshotSourceFields[$foreignKey] = $model[$foreignKey];
+                }
             }
         });
     }
