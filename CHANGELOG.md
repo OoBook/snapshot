@@ -2,6 +2,12 @@
 
 All notable changes to `snapshot` will be documented in this file
 
+## v1.0.5 - 2025-02-16
+
+### :wrench: Bug Fixes
+
+- Add null checks in snapshot source field population by @OoBook in https://github.com/OoBook/snapshot/commit/baa16eb8625cb3e0a96876c2402a0c549b5467cf
+
 ## v1.0.4 - 2024-11-29
 
 ### :wrench: Bug Fixes
