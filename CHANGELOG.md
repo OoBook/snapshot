@@ -2,6 +2,26 @@
 
 All notable changes to `snapshot` will be documented in this file
 
+## v2.0.0 - 2025-03-21
+
+🚀 Features
+
+Introduce ConfigureSnapshot trait for snapshot configuration management by @OoBook in https://github.com/OoBook/snapshot/commit/5474698c459facb5307e53ee3c50e260c2d0c554
+Add Relationships trait for managing snapshot and source model relationships by @OoBook in https://github.com/OoBook/snapshot/commit/0890a7b6073d56b45e9e8c8ccd65f54b09b60727
+Introduce SnapshotFields trait for managing snapshot attributes and relationships by @OoBook in https://github.com/OoBook/snapshot/commit/421d34ea5eded44dfd16c8c1604e7af7b7efa1e8
+Refactor HasSnapshot trait into a new Concerns namespace for improved organization and functionality by @OoBook in https://github.com/OoBook/snapshot/commit/ec5c970acde670d4addbcea2c4e85811e79a2248
+📝 Documentation
+
+Enhance documentation for HasSnapshot trait with usage examples and configuration options by @OoBook in https://github.com/OoBook/snapshot/commit/2e6dbc1a06151e69349a7dd3dfb37728bd295227
+✅ Testing
+
+add comprehensive tests for snapshot methods and relationships by @OoBook in https://github.com/OoBook/snapshot/commit/80867b0ba15c0d168d0defe3c1131ff20fccdf8c
+💚 Workflow
+
+Update Laravel versions in GitHub Actions workflow to include Laravel 12 and adjust testbench configurations by @OoBook in https://github.com/OoBook/snapshot/commit/32c3438d51a25e42b17ddb1492bc0e3fdc439332
+add Laravel 12 test by @web-flow in https://github.com/OoBook/snapshot/commit/0795df05294af1270a514ad7e13246796176aced
+create manual-release.yml by @web-flow in https://github.com/OoBook/snapshot/commit/1b23a5121da1b64592b1c6be60ed930e2d32f99c
+
 ## v1.0.5 - 2025-02-16
 
 ### :wrench: Bug Fixes
