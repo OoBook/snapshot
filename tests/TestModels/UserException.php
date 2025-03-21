@@ -3,7 +3,7 @@
 namespace Oobook\Snapshot\Tests\TestModels;
 
 use Illuminate\Database\Eloquent\Model;
-use Oobook\Snapshot\Traits\HasSnapshot;
+use Oobook\Snapshot\Concerns\HasSnapshot;
 
 class UserException extends Model
 {

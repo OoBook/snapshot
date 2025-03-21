@@ -10,7 +10,7 @@ class User extends Model
 {
     use ManageEloquent;
 
-    protected $fillable = ['name', 'email'];
+    protected $fillable = ['name', 'email', 'user_type_id'];
 
     protected $table = 'users';
 
@@ -19,10 +19,14 @@ class User extends Model
         return $this->hasMany(Post::class);
     }
 
-
-    public function files(): \Illuminate\Database\Eloquent\Relations\MorphMany
+    public function fileNames(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
         return $this->morphMany(File::class, 'fileable');
+    }
+
+    public function userType(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(UserType::class);
     }
 
 }

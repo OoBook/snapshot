@@ -58,16 +58,31 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
             $table->timestamps();
         });
 
+        $schema->create('user_types', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('title');
+            $table->string('description')->nullable();
+            $table->timestamps();
+        });
+
+        $schema->create('users', function (Blueprint $table) {
+            $table->increments('id');
+            $table->foreignId('user_type_id')->nullable()->constrained()->nullOnDelete();
+            $table->string('name');
+            $table->string('email');
+            $table->timestamps();
+        });
+
+
         $schema->create('user_snapshots', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
             $table->timestamps();
         });
 
-        $schema->create('users', function (Blueprint $table) {
+        $schema->create('user_email_snapshotteds', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
-            $table->string('email');
             $table->timestamps();
         });
 
@@ -84,5 +99,12 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
             $table->uuidMorphs('fileable');
             $table->string('name');
         });
+    }
+
+    public static function callMethod($obj, $name, array $args) {
+        $class = new \ReflectionClass($obj);
+        $method = $class->getMethod($name);
+        // $method->setAccessible(true); // Use this if you are running PHP older than 8.1.0
+        return $method->invokeArgs($obj, $args);
     }
 }
