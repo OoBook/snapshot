@@ -116,7 +116,7 @@ $model->snapshotSource;
 ```php
 // Create a new snapshot
 $snapshot = MyProduct::create([
-    'source_id' => $sourceModel->id,
+    'your_model_id' => $sourceModel->id,
     'name' => 'Custom Name',
     'posts' => [1, 2, 3] // IDs of posts to snapshot
 ]);
