@@ -17,8 +17,14 @@ You can install the package via composer:
 composer require oobook/snapshot
 ```
 
+#### Publish migrations
+Create the snapshot migrations file under database/migrations/ folder using **artisan**
+```
+php artisan vendor:publish --tag="snapshot-migrations"
+```
+
 #### Publish config
-Create the snapshot config file under config/ folder using **artisan**
+If you would like to to change snapshot table name, create the snapshot config file under config/ folder using **artisan**
 ```
 php artisan vendor:publish --tag="snapshot-config"
 ```
