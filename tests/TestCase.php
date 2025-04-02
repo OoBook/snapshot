@@ -94,6 +94,13 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
             $table->timestamps();
         });
 
+        $schema->create('comments', function (Blueprint $table) {
+            $table->increments('id');
+            $table->foreignId('post_id')->nullable()->constrained()->nullOnDelete();
+            $table->string('content');
+            $table->timestamps();
+        });
+
         $schema->create('files', function (Blueprint $table) {
             $table->increments('id');
             $table->uuidMorphs('fileable');
