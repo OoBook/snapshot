@@ -2,6 +2,17 @@
 
 All notable changes to `snapshot` will be documented in this file
 
+## v2.1.0 - 2025-04-02
+
+### :rocket: Features
+
+- Introduce LazyRelations trait to enhance snapshot relationship handling and improve load methods by @OoBook in https://github.com/OoBook/snapshot/commit/3b5c68aa04a47fee2683ea0c476eae878db755f2
+- add SnapshotLazyRelationsTest to validate lazy loading and relation handling in snapshots by @OoBook in https://github.com/OoBook/snapshot/commit/7219c6a288a9f202be0ae7f8e738a47640d63576
+
+### :memo: Documentation
+
+- add foreign key of related model into README while creating by @web-flow in https://github.com/OoBook/snapshot/commit/46f6414aafdb0b833e1f054edcd16c8de2c634a3
+
 ## v2.0.0 - 2025-03-21
 
 🚀 Features
