@@ -21,7 +21,8 @@ trait HasSnapshot
     use ManageEloquent,
         SnapshotFields,
         ConfigureSnapshot,
-        Relationships;
+        Relationships,
+        LazyRelations;
 
     /**
      * Cached snapshot data
