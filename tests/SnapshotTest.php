@@ -44,7 +44,7 @@ class SnapshotTest extends TestCase
             'name' => 'Lorem',
         ]);
 
-        $this->assertTrue(method_exists($model, 'getColumns'), 'ManageEloquent Trait does not have "getColumns" method');
+        $this->assertTrue(method_exists($model, 'getTableColumns'), 'ManageEloquent Trait does not have "getTableColumns" method');
         $this->assertTrue(method_exists($model, 'definedRelations'), 'ManageEloquent Trait does not have "definedRelations" method');
     }
 

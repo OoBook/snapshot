@@ -76,7 +76,7 @@ trait SnapshotFields
         $sourceClass = new (static::getSnapshotSourceClass());
 
         $sourceFillable = $sourceClass->getFillable();
-        // $sourceColumns = $sourceClass->getColumns();
+        // $sourceColumns = $sourceClass->getTableColumns();
         $sourceMutatedAttributes = $sourceClass->getMutatedAttributes();
         $sourceTimestampColumns = $sourceClass->getTimestampColumns();
 
