@@ -80,7 +80,7 @@ trait HasSnapshot
 
             if($snapshot){
                 foreach (array_keys($model->snapshotSavingData) as $field) { // whether to update snapshot fields individually
-                    if (!in_array($field, $model->getColumns()) && isset($model->{$field})) {
+                    if (!in_array($field, $model->getTableColumns()) && isset($model->{$field})) {
                         $shouldUpdateSnapshot = !$snapshotSourceChanged ||
                             json_encode($model->snapshotSavingData[$field] ?? null) !== json_encode($model->{$field});
 
