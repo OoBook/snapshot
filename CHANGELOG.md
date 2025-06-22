@@ -2,6 +2,12 @@
 
 All notable changes to `snapshot` will be documented in this file
 
+## v2.1.2 - 2025-06-22
+
+### :wrench: Bug Fixes
+
+- improve snapshot handling in HasSnapshot by refining condition checks and ensuring null safety by @OoBook in https://github.com/OoBook/snapshot/commit/d8dd06fff7ca5b4b792e5924fcd47b5dff6f6da5
+
 ## v2.1.0 - 2025-04-02
 
 ### :rocket: Features
