@@ -49,12 +49,11 @@ trait HasSnapshot
     {
         self::saving(function ($model) {
             $snapshot = $model->snapshot;
-                
             $snapshotSourceChanged = false;
             $snapshotSourceForeignKey = $model->getSnapshotSourceForeignKey();
 
-            if( $model->getAttribute($snapshotSourceForeignKey) 
-                && $snapshot 
+            if( $model->getAttribute($snapshotSourceForeignKey)
+                && $snapshot
                 && ((int)$snapshot->source_id != (int)$model->getAttribute($snapshotSourceForeignKey))
             ){ // updating snapshot source
                 $snapshotSourceChanged = true;
@@ -92,7 +91,6 @@ trait HasSnapshot
                     }
                 }
             }
-
 
         });
 
@@ -230,7 +228,7 @@ trait HasSnapshot
             $serializedData = null;
 
             // if relationshipName exists on payload, get this value but not real relationship
-            if ($valueOnModel) {
+            if ($valueOnModel !== null) {
                 if ($valueOnModel instanceof Collection) {
                     $valueOnModel = $valueOnModel->toArray();
                 }
@@ -268,11 +266,12 @@ trait HasSnapshot
                     : $source->{$relationshipName};
 
 
-
                 if (json_encode($valueOnModel) != json_encode($oldValue)) {
                     if (is_array($valueOnModel)) {
                         if (count($valueOnModel) > 0) {
                             $serializedData = $source->{$relationshipName}()->getRelated()->whereIn('id', $valueOnModel)->get();
+                        } else {
+                            $serializedData = [];
                         }
                     } else {
                         $serializedData = $source->{$relationshipName}()->getRelated()->where('id', $valueOnModel)->first();
@@ -285,7 +284,7 @@ trait HasSnapshot
                 $serializedData = $source->{$relationshipName};
             }
 
-            if ($serializedData) {
+            if ($serializedData !== null) {
                 $data[$relationshipName] = $serializedData;
                 $serializedData = null;
             }
@@ -421,8 +420,8 @@ trait HasSnapshot
         $foreignKey = $this->getSnapshotSourceForeignKey();
 
 
-        if($this->exists 
-            && !in_array($key, $reservedAttributes) 
+        if($this->exists
+            && !in_array($key, $reservedAttributes)
             && !in_array($key, ['snapshot', 'source', 'snapshotSource'])
         ){
 
