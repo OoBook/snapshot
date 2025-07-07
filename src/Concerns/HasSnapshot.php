@@ -197,13 +197,18 @@ trait HasSnapshot
      */
     public function prepareDataToSnapshot(): array
     {
-        $source = $this->snapshotSource()->with($this->getSourceRelationshipsToSnapshot())->first();
+        $sourceRelationships = $this->getSourceRelationshipsToSnapshot();
+        $source = $this->getSnapshotSource();
+
+        foreach($sourceRelationships as $relationship){
+          $source->load($relationship);
+        }
 
         // Instead of using toArray(), we'll build the array manually to preserve relationship names
         $data = $source->attributesToArray();
 
         // Add relationships with original names
-        foreach ($this->getSourceRelationshipsToSnapshot() as $relation) {
+        foreach ($sourceRelationships as $relation) {
             if ($source->relationLoaded($relation)) {
                 $data[$relation] = $source->getRelation($relation);
             }
@@ -216,7 +221,7 @@ trait HasSnapshot
             $data[$field] = $value;
         }
 
-        foreach ($this->getSourceRelationshipsToSnapshot() as $relationshipName) {
+        foreach ($sourceRelationships as $relationshipName) {
             $relatedClass = $source->{$relationshipName}()->getRelated();
 
             if ($this::class === get_class($relatedClass)) {
@@ -349,7 +354,7 @@ trait HasSnapshot
             return;
         }
 
-        $this->snapshot()->updateOrCreate(
+        $snapshot = $this->snapshot()->updateOrCreate(
             [
                 'snapshotable_id' => $this->id,
                 'snapshotable_type' => get_class($this),
@@ -359,7 +364,7 @@ trait HasSnapshot
             []
         );
 
-        $this->snapshot()->update([
+        $snapshot->update([
             'data' => $this->prepareDataToSnapshot()
         ]);
     }
