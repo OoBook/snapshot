@@ -2,6 +2,17 @@
 
 All notable changes to `snapshot` will be documented in this file
 
+## v2.1.3 - 2025-07-09
+
+### :wrench: Bug Fixes
+
+- streamline data preparation and snapshot saving in HasSnapshot for improved clarity and performance by @OoBook in https://github.com/OoBook/snapshot/commit/beca1eead160a3ca4b37a9f3b7dc45a236e14ecb
+
+### :recycle: Refactors
+
+- deprecate source method in favor of snapshotSource and streamline query conditions by @OoBook in https://github.com/OoBook/snapshot/commit/f5a31e807a86f171471eb278b7ce7c1fdd0614a4
+- replace 'source' references with 'snapshotSource' for consistency and clarity in HasSnapshot by @OoBook in https://github.com/OoBook/snapshot/commit/c41771d8b36c95bac7a2dd855875b647e407b0e5
+
 ## v2.1.2 - 2025-06-22
 
 ### :wrench: Bug Fixes
