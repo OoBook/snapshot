@@ -22,6 +22,7 @@ trait Relationships
      * Defines the relationship with the source model.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOneThrough
+     * @deprecated Use snapshotSource() instead
      */
     public function source(): \Illuminate\Database\Eloquent\Relations\HasOneThrough
     {
@@ -32,7 +33,7 @@ trait Relationships
             secondKey: 'id',
             localKey: 'id',
             secondLocalKey: 'source_id',
-        );
+        )->where('source_type', static::getSnapshotSourceClass());
     }
 
     /**
@@ -49,6 +50,6 @@ trait Relationships
             secondKey: 'id',
             localKey: 'id',
             secondLocalKey: 'source_id',
-        );
+        )->where('source_type', static::getSnapshotSourceClass());
     }
 }
