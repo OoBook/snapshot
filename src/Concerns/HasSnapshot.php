@@ -110,7 +110,7 @@ trait HasSnapshot
         foreach ($syncedSourceRelationships as $relationship) {
             if(!method_exists(static::class, $relationship)){
                 static::resolveRelationUsing($relationship, function ($snapshotable) use ($sourceInstance, $relationship) {
-                    $source = $snapshotable->source;
+                    $source = $snapshotable->snapshotSource;
 
                     if($source){
                         return $source->{$relationship}();
@@ -120,13 +120,6 @@ trait HasSnapshot
                 });
             }
         }
-
-        // if(method_exists($sourceInstance, 'definedRelationsTypes')){
-        // }
-
-        // static::resolveRelationUsing('source', function ($model) {
-        //     return $model->hasOneThrough(Snapshot::class, Snapshot::class, 'snapshotable_id', 'id', 'id', 'source_id');
-        // });
     }
 
     /**
@@ -186,7 +179,7 @@ trait HasSnapshot
             return $class::find($sourceModelOwnerId);
         }
 
-        return $this->source;
+        return $this->snapshotSource;
     }
 
     /**
@@ -198,7 +191,7 @@ trait HasSnapshot
     public function prepareDataToSnapshot(): array
     {
         $sourceRelationships = $this->getSourceRelationshipsToSnapshot();
-        $source = $this->getSnapshotSource();
+        $source = $this->snapshotSource()->with($sourceRelationships)->first();
 
         foreach($sourceRelationships as $relationship){
           $source->load($relationship);
@@ -373,9 +366,9 @@ trait HasSnapshot
     {
         $attributes = parent::attributesToArray();
 
-        $source = $this->relationLoaded('source')
-            ? $this->getRelation('source')
-            : $this->source;
+        $source = $this->relationLoaded('snapshotSource')
+            ? $this->getRelation('snapshotSource')
+            : $this->snapshotSource;
 
         $snapshot = $this->snapshot;
 
@@ -438,9 +431,9 @@ trait HasSnapshot
                     return $snapshot->source_id;
                 }
 
-                $source = $this->relationLoaded('source')
-                    ? $this->getRelation('source')
-                    : $this->source;
+                $source = $this->relationLoaded('snapshotSource')
+                    ? $this->getRelation('snapshotSource')
+                    : $this->snapshotSource;
 
                 if($this->fieldIsSnapshotSynced($key)){
                     if($source){
@@ -523,9 +516,9 @@ trait HasSnapshot
 
                 if($methodReflector->hasReturnType() && preg_match("{$relationClassesPattern}", $methodReflector->getReturnType() )){
 
-                    $source = $this->relationLoaded('source')
-                        ? $this->getRelation('source')
-                        : $this->source;
+                    $source = $this->relationLoaded('snapshotSource')
+                        ? $this->getRelation('snapshotSource')
+                        : $this->snapshotSource;
 
                     $query = $source->{$method}();
 
