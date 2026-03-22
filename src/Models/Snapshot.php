@@ -18,6 +18,10 @@ class Snapshot extends Model
         'data' => 'array',
     ];
 
+    protected $hidden = [
+        'data',
+    ];
+
     public function snapshotable(): \Illuminate\Database\Eloquent\Relations\MorphTo
     {
         return $this->morphTo();

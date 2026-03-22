@@ -6,6 +6,7 @@ use Oobook\Database\Eloquent\Concerns\ManageEloquent;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Oobook\Snapshot\Models\Snapshot;
+use Oobook\Snapshot\Relations\SnapshotSyncedRelationFactory;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -103,20 +104,41 @@ trait HasSnapshot
             // $model->fillable = $model->originalFillableForSnapshot;
         });
 
+        static::addGlobalScope('snapshot_required_for_synced', function ($builder) {
+            if (empty(static::getSourceRelationshipsToSync())) {
+                return;
+            }
+            $eagerLoads = $builder->getEagerLoads();
+            if (! array_key_exists('snapshot', $eagerLoads)) {
+                $builder->with('snapshot');
+            }
+        });
+
         $sourceClass = static::getSnapshotSourceClass();
         $sourceInstance = new $sourceClass();
         $syncedSourceRelationships = static::getSourceRelationshipsToSync();
 
         foreach ($syncedSourceRelationships as $relationship) {
-            if(!method_exists(static::class, $relationship)){
-                static::resolveRelationUsing($relationship, function ($snapshotable) use ($sourceInstance, $relationship) {
-                    $source = $snapshotable->snapshotSource;
+            if (! method_exists(static::class, $relationship)) {
+                static::resolveRelationUsing($relationship, function ($snapshotable) use ($sourceInstance, $relationship, $sourceClass) {
+                    $sourceRelation = $sourceInstance->{$relationship}();
 
-                    if($source){
-                        return $source->{$relationship}();
+                    if (SnapshotSyncedRelationFactory::supports($sourceRelation)) {
+                        return SnapshotSyncedRelationFactory::make(
+                            $sourceRelation,
+                            $snapshotable,
+                            $sourceClass,
+                            $relationship
+                        );
                     }
 
-                    return $sourceInstance->{$relationship}();
+                    throw new \InvalidArgumentException(
+                        sprintf(
+                            'Snapshot relation [%s] on [%s] is not supported. Use BelongsTo, MorphTo, HasOne, HasMany, HasOneThrough, HasManyThrough, BelongsToMany, MorphOne, MorphMany, or MorphToMany.',
+                            $relationship,
+                            get_class($snapshotable)
+                        )
+                    );
                 });
             }
         }
@@ -131,11 +153,14 @@ trait HasSnapshot
      */
     public function initializeHasSnapshot()
     {
+        $this->makeHidden(array_merge($this->hidden, ['snapshotSource', 'snapshot']));
         $this->mergeFillable($this->getFillableForSnapshot());
 
         $this->withSnapshot = array_values(array_intersect($this->with, $this->getSourceRelationshipsToSnapshot()));
 
-        $this->with = array_merge(array_values(array_diff($this->with, $this->withSnapshot)), ['snapshot']);
+        $baseWith = array_merge(array_values(array_diff($this->with, $this->withSnapshot)), ['snapshot', 'snapshotSource']);
+        $syncedRelations = static::getSourceRelationshipsToSync();
+        $this->with = array_values(array_unique(array_merge($baseWith, $syncedRelations)));
     }
 
     /**
@@ -372,7 +397,6 @@ trait HasSnapshot
 
         $snapshot = $this->snapshot;
 
-
         if($source){
             $reservedAttributes = $this->getReservedAttributesAgainstSnapshot();
             $snapshotableSourceAttributes = $this->getSnapshotableSourceAttributes();
@@ -392,6 +416,7 @@ trait HasSnapshot
 
             $snapshottedKeys = $this->getSourceAttributesToSnapshot();
             $snapshottedAttributes = [];
+
             if($snapshot){
                 $snapshottedAttributes = array_intersect_key($snapshot->data, array_flip($snapshottedKeys));
                 if($snapshottedWiths){
@@ -417,13 +442,12 @@ trait HasSnapshot
         $sourceClass = new ($this->getSnapshotSourceClass());
         $foreignKey = $this->getSnapshotSourceForeignKey();
 
-
         if($this->exists
             && !in_array($key, $reservedAttributes)
             && !in_array($key, ['snapshot', 'source', 'snapshotSource'])
         ){
 
-            if($this->snapshot()->exists() && $foreignKey ){
+            if($this->snapshot && $foreignKey ){
 
                 $snapshot = $this->snapshot;
 
@@ -431,13 +455,9 @@ trait HasSnapshot
                     return $snapshot->source_id;
                 }
 
-                $source = $this->relationLoaded('snapshotSource')
-                    ? $this->getRelation('snapshotSource')
-                    : $this->snapshotSource;
-
                 if($this->fieldIsSnapshotSynced($key)){
-                    if($source){
-                        return $source->{$key};
+                    if($this->snapshotSource){
+                        return $this->snapshotSource->{$key};
                     }
                 }
 
@@ -503,7 +523,6 @@ trait HasSnapshot
      */
     public function __call($method, $parameters)
     {
-
         if($this->exists && !$this->hasColumn($method) ){
 
             $snapshotSourceClass = $this->getSnapshotSourceClass();
@@ -540,8 +559,6 @@ trait HasSnapshot
                 }
             }
         }
-
-
 
         return parent::__call($method, $parameters);
     }
