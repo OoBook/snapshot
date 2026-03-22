@@ -2,6 +2,19 @@
 
 All notable changes to `snapshot` will be documented in this file
 
+## v2.2.0 - 2026-03-22
+
+### :rocket: Features
+
+- introduce SnapshotSynced relation classes for enhanced snapshot handling by @oguzhanbukcuoglu in https://github.com/OoBook/snapshot/commit/9b4f745ea2a799b1b43a5c9d63faf29fb2f56848
+- add ResolvesSnapshotSource trait for improved snapshot model handling by @oguzhanbukcuoglu in https://github.com/OoBook/snapshot/commit/fbe134a194b82351b10a73b569fe8648e8a5afd8
+- enhance HasSnapshot with global scope and improved relationship handling by @oguzhanbukcuoglu in https://github.com/OoBook/snapshot/commit/f12afdeabe5eebf90a97d01d1286337a665e2b1b
+- hide 'data' attribute in Snapshot model for improved security by @oguzhanbukcuoglu in https://github.com/OoBook/snapshot/commit/9ac57f2624b9441f0763012daa2a6fdd3c184f96
+
+### :recycle: Refactors
+
+- update action references from 'automated' to 'autonomous' in manual-release and release workflows by @oguzhanbukcuoglu in https://github.com/OoBook/snapshot/commit/7368776ad40c1fd7ecc5f11bdeefcbd635a79eff
+
 ## v2.1.3 - 2025-07-09
 
 ### :wrench: Bug Fixes
